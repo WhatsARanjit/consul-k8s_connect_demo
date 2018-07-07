@@ -1,0 +1,8 @@
+{
+  "server": true,
+  "bind_addr": "$(MY_POD_IP)",
+  "client_addr": "$(MY_POD_IP)",
+  "data_dir": "/consul/data",
+  "ui": true,
+  "advertise_addr": "$(MY_POD_IP)"
+}

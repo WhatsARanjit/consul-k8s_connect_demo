@@ -1,0 +1,25 @@
+{
+  "leave_on_terminate": true,
+  "bind_addr": "$(MY_POD_IP)",
+  "client_addr": "$(MY_POD_IP)",
+  "retry_join": ["172.17.0.4"],
+  "service": {
+    "name": "web",
+    "port": 80,
+    "checks": [{
+      "http": "http://localhost:80/web",
+      "interval": "10s",
+      "timeout": "1s"
+    }],
+    "connect": {
+      "proxy": {
+        "config": {
+          "upstreams": [{
+            "destination_name": "db",
+            "local_bind_port": 9801
+          }]
+        }
+      }
+    }
+  }
+}

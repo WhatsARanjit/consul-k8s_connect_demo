@@ -1,0 +1,49 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "db"
+  namespace: "default"
+  labels:
+    app: "db"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "db"
+  template:
+    metadata:
+      labels:
+        app: "db"
+    spec:
+      containers:
+      - name: "db"
+        image: "whatsaranjit/k8s_connect:v1"
+        env:
+        - name: port
+          value: '8081'
+      - name: "consul"
+        image: "consul"
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: "CONSUL_LOCAL_CONFIG"
+          value:
+            "{
+              \"leave_on_terminate\": true,
+              \"bind_addr\": \"$(MY_POD_IP)\",
+              \"client_addr\": \"$(MY_POD_IP)\",
+              \"retry_join\": [\"172.17.0.4\"],
+              \"service\": {
+                \"name\": \"db\",
+                \"port\": 8081,
+                \"checks\": [{
+                  \"http\": \"http://localhost:8081/db\",
+                  \"interval\": \"10s\",
+                  \"timeout\": \"1s\"
+                }],
+                \"connect\": { \"proxy\": {} }
+              }
+            }"

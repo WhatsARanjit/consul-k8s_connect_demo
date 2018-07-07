@@ -1,0 +1,61 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "web"
+  namespace: "default"
+  labels:
+    app: "web"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "web"
+  template:
+    metadata:
+      labels:
+        app: "web"
+    spec:
+      containers:
+      - name: "web"
+        image: "whatsaranjit/k8s_connect:v1"
+        imagePullPolicy: Always
+        env:
+        - name: dbhost
+          value: '10.20.0.13'
+        - name: dbport
+          value: '8081'
+      - name: "consul"
+        image: "consul"
+        env:
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: "CONSUL_LOCAL_CONFIG"
+          value:
+            "{
+              \"leave_on_terminate\": true,
+              \"bind_addr\": \"$(MY_POD_IP)\",
+              \"client_addr\": \"$(MY_POD_IP)\",
+              \"retry_join\": [\"172.17.0.4\"],
+              \"service\": {
+                \"name\": \"web\",
+                \"port\": 80,
+                \"checks\": [{
+                  \"http\": \"http://localhost:80/web\",
+                  \"interval\": \"10s\",
+                  \"timeout\": \"1s\"
+                }],
+                \"connect\": {
+                  \"proxy\": {
+                    \"config\": {
+                      \"upstreams\": [{
+                        \"destination_name\": \"db\",
+                        \"local_bind_port\": 8081
+                      }]
+                    }
+                  }
+                }
+              }
+            }"
