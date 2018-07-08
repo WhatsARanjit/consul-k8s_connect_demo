@@ -1,0 +1,7 @@
+  <div class="alert alert-success" role="alert">
+    API machine: <%= Socket.gethostname %>
+  </div>
+  <% st = @dbname == 'unreachable' ? 'danger' : 'success' %>
+  <div class="alert alert-<%= st %>" role="alert">
+    DB machine: <%= @dbname %>
+  </div>

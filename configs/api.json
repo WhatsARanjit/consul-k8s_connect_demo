@@ -4,10 +4,10 @@
   "client_addr": "$(MY_POD_IP)",
   "retry_join": ["$(CONSUL_SERVER)"],
   "service": {
-    "name": "web",
-    "port": 80,
+    "name": "api",
+    "port": 8081,
     "checks": [{
-      "http": "http://localhost",
+      "http": "http://localhost:8081/api",
       "interval": "10s",
       "timeout": "1s"
     }],
@@ -15,8 +15,8 @@
       "proxy": {
         "config": {
           "upstreams": [{
-            "destination_name": "api",
-            "local_bind_port": 8081
+            "destination_name": "db",
+            "local_bind_port": 8082
           }]
         }
       }

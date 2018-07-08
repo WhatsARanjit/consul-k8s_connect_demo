@@ -4,17 +4,27 @@ require 'net/http'
 set :bind, '0.0.0.0'
 set :port, ENV['port']
 
-get '/web' do
-  @dbhost = ENV['dbhost'] || 'localhost'
-  dbport  = ENV['dbport'] || 8081
-  dbpass  = ENV['dbpass'] || 'password123'
-  uri     = URI(%(http://#{@dbhost}:#{dbport}/db?password=#{dbpass}))
+get '/' do
+  apihost = ENV['apihost'] || 'localhost'
+  uri     = URI(%(http://#{apihost}:8081/api))
+  begin
+    @apiname = Net::HTTP.get(uri)
+  rescue StandardError
+    @apiname = 'unreachable'
+  end
+  erb :web
+end
+
+get '/api' do
+  dbhost = ENV['dbhost'] || 'localhost'
+  dbpass = ENV['dbpass'] || 'password123'
+  uri    = URI(%(http://#{dbhost}:8082/db?password=#{dbpass}))
   begin
     @dbname = Net::HTTP.get(uri)
   rescue StandardError
     @dbname = 'unreachable'
   end
-  erb :web
+  erb :api
 end
 
 get '/db' do

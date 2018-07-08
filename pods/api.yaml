@@ -2,27 +2,29 @@
 apiVersion: "extensions/v1beta1"
 kind: "Deployment"
 metadata:
-  name: "web"
+  name: "api"
   namespace: "default"
   labels:
-    app: "web"
+    app: "api"
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: "web"
+      app: "api"
   template:
     metadata:
       labels:
-        app: "web"
+        app: "api"
     spec:
       containers:
-      - name: "web"
+      - name: "api"
         image: "whatsaranjit/k8s_connect:v1"
         imagePullPolicy: Always
         env:
-        - name: apihost
+        - name: dbhost
           value: '10.20.0.13'
+        - name: port
+          value: '8081'
       - name: "consul"
         image: "consul"
         env:
@@ -40,10 +42,10 @@ spec:
               \"client_addr\": \"$(MY_POD_IP)\",
               \"retry_join\": [\"$(CONSUL_SERVER)\"],
               \"service\": {
-                \"name\": \"web\",
-                \"port\": 80,
+                \"name\": \"api\",
+                \"port\": 8081,
                 \"checks\": [{
-                  \"http\": \"http://localhost\",
+                  \"http\": \"http://localhost:8081/api\",
                   \"interval\": \"10s\",
                   \"timeout\": \"1s\"
                 }],
@@ -51,8 +53,8 @@ spec:
                   \"proxy\": {
                     \"config\": {
                       \"upstreams\": [{
-                        \"destination_name\": \"api\",
-                        \"local_bind_port\": 8081
+                        \"destination_name\": \"db\",
+                        \"local_bind_port\": 8082
                       }]
                     }
                   }

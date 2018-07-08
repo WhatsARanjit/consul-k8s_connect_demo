@@ -1,8 +1,10 @@
 FROM ruby:2.4.1
 
 ENV port=80
+ENV apihost=localhost
+ENV apiport=8081
 ENV dbhost=localhost
-ENV dbport=8081
+ENV dbport=8082
 ENV dbpass=password123
 
 RUN apt-get update -q && \

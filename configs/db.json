@@ -5,9 +5,9 @@
   "retry_join": ["$(CONSUL_SERVER)"],
   "service": {
     "name": "db",
-    "port": 8081,
+    "port": 8082,
     "checks": [{
-      "http": "http://localhost:8081/db",
+      "http": "http://localhost:8082/db",
       "interval": "10s",
       "timeout": "1s"
     }],
