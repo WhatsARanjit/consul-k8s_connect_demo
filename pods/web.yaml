@@ -28,6 +28,8 @@ spec:
       - name: "consul"
         image: "consul"
         env:
+        - name: CONSUL_SERVER
+          value: '172.17.0.4'
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
@@ -38,7 +40,7 @@ spec:
               \"leave_on_terminate\": true,
               \"bind_addr\": \"$(MY_POD_IP)\",
               \"client_addr\": \"$(MY_POD_IP)\",
-              \"retry_join\": [\"172.17.0.4\"],
+              \"retry_join\": [\"$(CONSUL_SERVER)\"],
               \"service\": {
                 \"name\": \"web\",
                 \"port\": 80,
