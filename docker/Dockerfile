@@ -5,6 +5,9 @@ ENV dbhost=localhost
 ENV dbport=8081
 ENV dbpass=password123
 
+RUN apt-get update -q && \
+    apt-get install -q -y tcpdump
+
 RUN  mkdir -p /opt/k8s_connect
 COPY . /opt/k8s_connect
 
