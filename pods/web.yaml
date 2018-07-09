@@ -22,12 +22,18 @@ spec:
         imagePullPolicy: Always
         env:
         - name: apihost
-          value: '10.20.0.13'
+          valueFrom:
+            configMapKeyRef:
+              name: api
+              key: ip
       - name: "consul"
         image: "consul"
         env:
         - name: CONSUL_SERVER
-          value: '172.17.0.4'
+          valueFrom:
+            configMapKeyRef:
+              name: consul
+              key: ip
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
