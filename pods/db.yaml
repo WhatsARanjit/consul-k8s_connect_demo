@@ -19,6 +19,7 @@ spec:
       containers:
       - name: "db"
         image: "whatsaranjit/k8s_connect:v1"
+        imagePullPolicy: Always
         env:
         - name: port
           value: '8081'
@@ -26,7 +27,10 @@ spec:
         image: "consul"
         env:
         - name: CONSUL_SERVER
-          value: '172.17.0.4'
+          valueFrom:
+            configMapKeyRef:
+              name: consul
+              key: ip
         - name: MY_POD_IP
           valueFrom:
             fieldRef:

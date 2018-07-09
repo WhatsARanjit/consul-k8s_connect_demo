@@ -4,7 +4,7 @@ require 'net/http'
 set :bind, '0.0.0.0'
 set :port, ENV['port']
 
-get '/web' do
+get '/' do
   @dbhost = ENV['dbhost'] || 'localhost'
   dbport  = ENV['dbport'] || 8081
   dbpass  = ENV['dbpass'] || 'password123'
