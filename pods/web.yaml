@@ -1,5 +1,5 @@
 ---
-apiVersion: "extensions/v1beta1"
+apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
   name: "web"
@@ -16,6 +16,7 @@ spec:
       labels:
         app: "web"
     spec:
+      serviceAccountName: "consul-sa"
       containers:
       - name: "web"
         image: "whatsaranjit/k8s_connect:v1"
@@ -29,11 +30,6 @@ spec:
       - name: "consul"
         image: "consul"
         env:
-        - name: CONSUL_SERVER
-          valueFrom:
-            configMapKeyRef:
-              name: consul
-              key: ip
         - name: MY_POD_IP
           valueFrom:
             fieldRef:
@@ -44,7 +40,7 @@ spec:
               \"leave_on_terminate\": true,
               \"bind_addr\": \"$(MY_POD_IP)\",
               \"client_addr\": \"$(MY_POD_IP)\",
-              \"retry_join\": [\"$(CONSUL_SERVER)\"],
+              \"retry_join\": [\"provider=k8s label_selector=\\\"app=consul-server\\\"\"],
               \"service\": {
                 \"name\": \"web\",
                 \"port\": 80,
