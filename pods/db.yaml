@@ -49,3 +49,12 @@ spec:
                 \"connect\": { \"proxy\": {} }
               }
             }"
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "db"
+spec:
+  selector:
+    name: "db"
+  clusterIP: None
