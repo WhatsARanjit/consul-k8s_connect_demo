@@ -1,5 +1,5 @@
 ---
-apiVersion: "extensions/v1beta1"
+apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
   name: "web"
@@ -16,6 +16,7 @@ spec:
       labels:
         app: "web"
     spec:
+      serviceAccountName: "consul-sa"
       containers:
       - name: "web"
         image: "whatsaranjit/k8s_connect:v1"
