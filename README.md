@@ -22,6 +22,8 @@ Setup a dummy web/db app in GKE.  Show usage without Consul Connect.  Turn on Co
 1. Determine the Consul service address either in the UI or with:
     ```
     kubectl get services consul-service
+    # or
+    kubectl get services consul-service -o jsonpath='{.status.loadBalancer.ingress[0].ip'} && echo
     ```
     The Consul UI will be at http://<consul_service_address>:8500.
 
@@ -34,7 +36,8 @@ Setup a dummy web/db app in GKE.  Show usage without Consul Connect.  Turn on Co
 
 1. In the Consul UI, note the IP address of the db node and save this value in a configmap:
     ```
-    kubectl create configmap db --from-literal=ip=<db_node_ip>
+    DB_IP=$(kubectl get pods -o json | jq -r '.items[] | select(.metadata.name|test("^db")) | .status.podIP')
+    kubectl create configmap db --from-literal=ip=$DB_IP
     ```
     _Note:_ Without configuring/managing k8s DNS, we end up hard-coding IPs.
 
@@ -44,9 +47,13 @@ Setup a dummy web/db app in GKE.  Show usage without Consul Connect.  Turn on Co
     kubectl create -f pods/web-service.yaml
     ```
 
+1. Check Consul to make sure `web` and `web-proxy` services get registered.
+
 1. Determine the web service address either in the UI or with:
     ```
     kubectl get services web-service
+    # or
+    kubectl get services web-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}' && echo
     ```
     The webapp will be at http://<web_service_address>.
 
@@ -55,11 +62,13 @@ Setup a dummy web/db app in GKE.  Show usage without Consul Connect.  Turn on Co
 1. List pods to find the db pod's ID:
     ```
     kubectl get pods
+    # OR
+    DB_ID=$(kubectl get pods -o json | jq -r '.items[] | select(.metadata.name|test("^db")) | .metadata.name')
     ```
 
 1. Log into the db pod:
     ```
-    kubectl exec -it <db_pod_id> t -c db -- bash
+    kubectl exec -it $DB_ID t -c db -- bash
     ```
 
 1. TCPDump on port 8081:
@@ -95,11 +104,13 @@ Setup a dummy web/db app in GKE.  Show usage without Consul Connect.  Turn on Co
 1. List pods to find the db pod's ID:
     ```
     kubectl get pods
+    # OR
+    DB_ID=$(kubectl get pods -o json | jq -r '.items[] | select(.metadata.name|test("^db")) | .metadata.name')
     ```
 
 1. Log into the db pod:
     ```
-    kubectl exec -it <db_pod_id> t -c db -- bash
+    kubectl exec -it $DB_ID t -c db -- bash
     ```
 
 1. Find upstream Connect database port under `db-proxy` in the Consul UI.
